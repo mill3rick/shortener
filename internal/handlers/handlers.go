@@ -13,7 +13,7 @@ const (
 )
 
 var bodyString string
-var shortId string
+var shortID string
 
 // Shortener функция — обработчик HTTP-запроса
 func Shortener(res http.ResponseWriter, req *http.Request) {
@@ -49,26 +49,23 @@ func Shortener(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	//Создаем короткий uuid для создания нашей короткой ссылки
-	shortId = shortuuid.New()[:8]
+	shortID = shortuuid.New()[:8]
 
-	shortUrl := base + shortId
+	shortURL := base + shortID
 	res.WriteHeader(http.StatusCreated)
 	res.Header().Set("Content-Type", "text/plain")
-	res.Write([]byte(shortUrl))
+	res.Write([]byte(shortURL))
 
 }
 
 func GetRedirect(res http.ResponseWriter, req *http.Request) {
-	//fmt.Println(bodyString)
-	//fmt.Println(shortId)
 	if req.Method != http.MethodGet {
 		// Проверяем тип запроса - валидируем только POST:
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "400 Status Not Allowed")
 		return
 	}
-	//fmt.Println(req.URL.Path)
-	if req.URL.Path[1:] != shortId {
+	if req.URL.Path[1:] != shortID {
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "400 Status Bad Request")
 		return
