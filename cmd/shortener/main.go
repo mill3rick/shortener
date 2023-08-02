@@ -20,5 +20,5 @@ func run() error {
 	rtr := mux.NewRouter()
 	rtr.HandleFunc(`/`, handlers.Shortener)
 	rtr.HandleFunc(`/{id}`, handlers.GetRedirect)
-	return http.ListenAndServe(`:8081`, rtr)
+	return http.ListenAndServe(`:8080`, rtr)
 }
