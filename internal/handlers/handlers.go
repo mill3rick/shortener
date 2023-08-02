@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/lithammer/shortuuid/v4"
+	shortuuid "github.com/lithammer/shortuuid/v4"
 	"io"
 	"net/http"
 	"net/url"
@@ -25,7 +25,7 @@ func Shortener(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	contentType := req.Header.Get("Content-type")
-	if contentType != "text/plain" {
+	if contentType != "text/plain; charset=utf-8" {
 		//Проверяем Content-Type - он должен быть text/plain
 		res.WriteHeader(http.StatusBadRequest)
 		fmt.Fprint(res, "400 Status Unsupported Media Type")
