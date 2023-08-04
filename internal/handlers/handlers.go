@@ -16,26 +16,23 @@ var bodyString string
 var shortID string
 
 // Shortener функция — обработчик HTTP-запроса
-func Shortener(res http.ResponseWriter, req *http.Request) {
+func ShortenerHandler(res http.ResponseWriter, req *http.Request) {
 
 	if req.Method != http.MethodPost {
 		// Проверяем тип запроса - валидируем только POST:
 		res.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(res, "400 Status Not Allowed")
 		return
 	}
-	contentType := req.Header.Get("Content-type")
+	contentType := req.Header.Get("Content-Type")
 	if contentType != "text/plain; charset=utf-8" {
 		//Проверяем Content-Type - он должен быть text/plain
 		res.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(res, "400 Status Unsupported Media Type")
 		return
 	}
 	body, err := io.ReadAll(req.Body)
 	if err != nil {
 		//проверяем, всё ли нормально с телом запроса
 		res.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(res, "400 Status Bad Request")
 		return
 	}
 	bodyString = string(body)
@@ -44,7 +41,6 @@ func Shortener(res http.ResponseWriter, req *http.Request) {
 	if err != nil {
 		//проверка валидности http(s)-ссылки
 		res.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(res, "400 bad URL")
 		fmt.Println(err)
 		return
 	}
@@ -53,21 +49,20 @@ func Shortener(res http.ResponseWriter, req *http.Request) {
 
 	shortURL := base + shortID
 	res.WriteHeader(http.StatusCreated)
-	res.Header().Set("Content-Type", "text/plain")
+	res.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	res.Write([]byte(shortURL))
 
 }
 
-func GetRedirect(res http.ResponseWriter, req *http.Request) {
+func GetRedirectHandler(res http.ResponseWriter, req *http.Request) {
 	if req.Method != http.MethodGet {
 		// Проверяем тип запроса - валидируем только POST:
 		res.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(res, "400 Status Not Allowed")
 		return
 	}
+	// Проверка, есть ли для id из пути запроса короткая ссылка:
 	if req.URL.Path[1:] != shortID {
 		res.WriteHeader(http.StatusBadRequest)
-		fmt.Fprint(res, "400 Status Bad Request")
 		return
 	}
 	http.Redirect(res, req, bodyString, http.StatusTemporaryRedirect)
