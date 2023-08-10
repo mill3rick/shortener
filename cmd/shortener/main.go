@@ -2,7 +2,6 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
 	"github.com/mill3rick/shortener/internal/handlers"
 	"net/http"
 )
@@ -16,9 +15,5 @@ func main() {
 
 // функция run будет полезна при инициализации зависимостей сервера перед запуском
 func run() error {
-	//mux := http.NewServeMux()
-	rtr := mux.NewRouter()
-	rtr.HandleFunc(`/`, handlers.ShortenerHandler)
-	rtr.HandleFunc(`/{id}`, handlers.GetRedirectHandler)
-	return http.ListenAndServe(`:8080`, rtr)
+	return http.ListenAndServe(`:8080`, handlers.ShortenerRouter())
 }
