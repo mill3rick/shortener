@@ -19,7 +19,6 @@ func testRequest1(t *testing.T, ts *httptest.Server, method, path string, body i
 	resp, err := ts.Client().Do(req)
 	require.NoError(t, err)
 	respBody, err := io.ReadAll(resp.Body)
-	defer resp.Body.Close()
 	require.NoError(t, err)
 	shortID2 = "/"
 	shortID2 += string(respBody)[strings.LastIndex(string(respBody), "/")+1:]
@@ -31,7 +30,6 @@ func testRequest2(t *testing.T, ts *httptest.Server, method, path string) *http.
 	require.NoError(t, err)
 	resp, err := ts.Client().Do(req)
 	require.NoError(t, err)
-	defer resp.Body.Close()
 	return resp
 }
 
@@ -88,6 +86,7 @@ func TestShortenerHandler(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.testNumber, func(t *testing.T) {
 			resp := testRequest1(t, ts, tc.method, "/", io.NopCloser(strings.NewReader(tc.body)), tc.contentType)
+			defer resp.Body.Close()
 			assert.Equal(t, tc.want.expectedCode, resp.StatusCode, "Код ответа не совпадает с ожидаемым")
 			assert.Equal(t, tc.want.expectedContentType, resp.Header.Get("Content-Type"), "Тело не совпадает с ожидаемым, тело из результата: %s", resp.Header.Get("Content-Type"))
 		})
@@ -138,6 +137,7 @@ func TestGetRedirectHandler(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.testNumber, func(t *testing.T) {
 			resp := testRequest2(t, ts, tc.method, tc.path)
+			defer resp.Body.Close()
 			assert.Equal(t, tc.want.expectedCode, resp.StatusCode, "Код ответа не совпадает с ожидаемым")
 			// проверим корректность полученного тела ответа, если мы его ожидаем
 			assert.Equal(t, tc.want.expectedContentType, resp.Header.Get("Content-Type"), "Хэдер не совпадает с ожидаемым, хэдер из результата: %s", resp.Header.Get("Content-Type"))
