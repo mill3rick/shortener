@@ -3,7 +3,7 @@ module github.com/mill3rick/shortener
 go 1.20
 
 require (
-	github.com/gorilla/mux v1.8.0
+	github.com/go-chi/chi/v5 v5.0.10
 	github.com/lithammer/shortuuid/v4 v4.0.0
 	github.com/stretchr/testify v1.8.4
 )

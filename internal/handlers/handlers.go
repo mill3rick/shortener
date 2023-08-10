@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	shortuuid "github.com/lithammer/shortuuid/v4"
 	"io"
 	"net/http"
@@ -15,14 +16,15 @@ const (
 var bodyString string
 var shortID string
 
+func ShortenerRouter() chi.Router {
+	router := chi.NewRouter()
+	router.Post("/", ShortenerHandler)
+	router.Get(`/{shortUuid}`, GetRedirectHandler)
+	return router
+}
+
 // Shortener функция — обработчик HTTP-запроса
 func ShortenerHandler(res http.ResponseWriter, req *http.Request) {
-
-	if req.Method != http.MethodPost {
-		// Проверяем тип запроса - валидируем только POST:
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
 	contentType := req.Header.Get("Content-Type")
 	if contentType != "text/plain; charset=utf-8" {
 		//Проверяем Content-Type - он должен быть text/plain
@@ -55,11 +57,6 @@ func ShortenerHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 func GetRedirectHandler(res http.ResponseWriter, req *http.Request) {
-	if req.Method != http.MethodGet {
-		// Проверяем тип запроса - валидируем только POST:
-		res.WriteHeader(http.StatusBadRequest)
-		return
-	}
 	// Проверка, есть ли для id из пути запроса короткая ссылка:
 	if req.URL.Path[1:] != shortID {
 		res.WriteHeader(http.StatusBadRequest)
